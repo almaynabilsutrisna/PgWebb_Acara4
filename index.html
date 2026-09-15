@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeafLetJS</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        html,
+        body,
+        #map {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        //intialize map
+        var map = L.map('map').setView([-7.7693759, 110.3891407
+        ], 15);
+
+        // Tile Layer Base Map
+
+        var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+        var osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution:
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        });
+
+        var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        });
+
+        var rupabumiindonesia = L.tileLayer('https://geoservices.big.go.id/rbi/rest/services/BASEMAP/Rupabumi_Indonesia/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Badan Informasi Geospasial'
+        });
+
+        // Menambahkan basemap ke dalam peta
+        OpenStreetMap_Mapnik.addTo(map);
+
+        // Marker
+        var marker = L.marker([-7.7693759, 110.3891407]);
+        var marker2 = L.marker([-7.4618794, 110.2726078]);
+
+        // Menambahkan marker ke dalam peta
+        marker.addTo(map);
+        marker2.addTo(map);
+
+        //popup
+        marker.bindPopup("<b>Hallo</b><br>Ini adalah lokasi kakak");
+        marker.openPopup();
+        marker2.bindPopup("<b><Halo</b><br>Ini rumah kakak");
+        marker2.openPopup();
+
+        //// Tooltip
+        marker.bindTooltip("Di sini");
+        marker.openTooltip();
+
+        //Circle
+        var circle = L.circle([-7.6195482, 110.3031850
+        ], {
+            color: "red", // warna garis
+            opacity: 1, // opacity garis
+            fillColor: "#f03", // warna fill
+            fillOpacity: 0.5, // opacity fill
+            radius: 1000, // radius dalam meter
+        });
+
+        // Menambahkan circle ke dalam peta
+        circle.addTo(map);
+
+        // Popup
+        circle.bindPopup("<b>Hallo</b><br>Ini adalah titik tengah antara jarak lokasi kakak dan rumah kakak");
+        circle.openPopup();
+
+        // Tooltip
+        circle.bindTooltip("Ini adalah tooltip circle", { sticky: true });
+        circle.openTooltip();
+
+        // Polyline
+        var vertexPolyline = [
+            [-7.7728856, 110.3838551
+            ],
+            [-7.7162650, 110.3392124
+            ],
+            [-7.6727154, 110.3234196
+            ],
+            [-7.5299571, 110.2777576
+            ],
+            [-7.4620496, 110.2708912
+            ],
+        ];
+        var polyline = L.polyline(vertexPolyline, {
+            color: "red", // warna garis
+            weight: 3, // ketebalan garis
+            opacity: 1, // opacity garis
+        });
+
+        // Menambahkan polyline ke dalam peta
+        polyline.addTo(map);
+
+        // Polygon
+        var vertexPolygon = [
+            [-7.7728856, 110.3838551
+            ],
+            [-7.4264748, 110.4640961
+            ],
+            [-7.4074095, 110.1551056
+            ],
+            [-7.7150743, 110.1413727
+            ],
+            [-7.7558981, 110.3130341
+            ]
+        ];
+        var polygon = L.polygon(vertexPolygon, {
+            color: "purple", // warna garis
+            weight: 3, // ketebalan garis
+            opacity: 1, // opacity garis
+            fillColor: "#0f3", // warna fill
+            fillOpacity: 0.5, // opacity fill
+        });
+
+        // Menambahkan polygon ke dalam peta
+        polygon.addTo(map);
+
+        // Control Layer
+        var baseMaps = {
+            "OpenStreetMap": osm,
+            "Esri World Imagery": Esri_WorldImagery,
+            "Rupa Bumi Indonesia": rupabumiindonesia,
+        };
+
+        var overlayMaps = {
+            "Marker": marker,
+            "Polygon": polygon,
+            "Polyline": polyline,
+            "Marker2": marker2,
+            "Circle": circle,
+        };
+
+        var controllayer = L.control.layers(baseMaps, overlayMaps);
+        controllayer.addTo(map);
+
+        // Scale 
+        var scale = L.control.scale({
+            position: "bottomright",
+            imperial
+        });
+        scale.addTo(map);
+
+        // Geolocation
+map.locate({
+	setView: true,
+	maxZoom: 16,
+});
+
+// Fungsi untuk menampilkan lokasi
+function onLocationFound(e) {
+	var radius = e.accuracy / 2;
+
+	// Menampilkan marker pada lokasi 
+	L.marker(e.latlng).addTo(map).bindPopup("Anda berada dalam radius " + radius + " meter dari titik ini").openPopup();
+
+	// Menampilkan circle pada lokasi
+	L.circle(e.latlng, radius).addTo(map);
+}
+
+map.on("locationfound", onLocationFound);
+
+// Fungsi untuk menampilkan pesan error
+function onLocationError(e) {
+	alert(e.message);
+}
+
+map.on("locationerror", onLocationError);
+    </script>
+</body>
+
+</html>
